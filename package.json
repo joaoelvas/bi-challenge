@@ -4,7 +4,10 @@
   "description": "This is the starter project for the final assessment project for Udacity's Redux course where you will build a content and comment web app. Users will be able to post content to predefined categories, comment on their posts and other users' posts, and vote on posts and comments. Users will also be able to edit and delete posts and comments.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon api-server/server.js",
+    "client": "npm run start --prefix frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "repository": {
     "type": "git",
@@ -15,5 +18,9 @@
   "bugs": {
     "url": "https://github.com/joaoelvas/bi-challenge/issues"
   },
-  "homepage": "https://github.com/joaoelvas/bi-challenge#readme"
+  "homepage": "https://github.com/joaoelvas/bi-challenge#readme",
+  "dependencies": {
+    "concurrently": "^4.0.1",
+    "uuid": "^3.3.2"
+  }
 }

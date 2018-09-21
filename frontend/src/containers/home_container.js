@@ -1,20 +1,19 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 // import { Link } from 'react-router-dom';
-import { getPosts, getCategories } from '../actions';
+import { getPosts, getCategories, addPost } from '../actions';
 import { bindActionCreators } from 'redux';
 import { Button, ListGroup, Modal, FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
 import PostItem from '../widgetsUI/post_item';
+import {v1 as uuidv1} from 'uuid';
 
 
 class HomeContainer extends Component {
 
     state = {
         show: false,
-        formData: {
-            id: "",
+        formdata: {
             title: "",
-            timestamp: "",
             body: "",
             author: "",
             category: ""
@@ -62,70 +61,99 @@ class HomeContainer extends Component {
             null
     )
 
-render() {
-    return (
-        <div className="container">
-            <Button bsStyle="primary" bsSize="small" onClick={this.handleShow}>Add Post</Button>
+    handleInput = (event,name) => {
+        const newFormData = {
+            ...this.state.formdata
+        }
+        newFormData[name] = event.target.value;
 
-            <Modal show={this.state.show} onHide={this.handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Add post</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <form>
-                        <FieldGroup
-                            id="formControlsText"
-                            type="text"
-                            label="Title"
-                            placeholder="Enter title"
-                        />
-                        <FormControl
-                            id="formControlsText"
-                            type="text"
-                            label="Title"
-                            placeholder="Enter title"
-                            value={this.state.title}
-                            placeholder="Enter text"
-                            onChange={this.handleChange}
-                        />
-                        <FormGroup controlId="formControlsTextarea">
-                            <ControlLabel>Textarea</ControlLabel>
-                            <FormControl componentClass="textarea" placeholder="Enter post body" />
-                        </FormGroup>
-                        <FieldGroup
-                            id="formControlsText"
-                            type="text"
-                            label="Author"
-                            placeholder="Enter author"
-                        />
+        this.setState({
+            formdata: newFormData
+        })
+    }
 
-                        <FormGroup controlId="formControlsSelect">
-                            <ControlLabel>Select</ControlLabel>
-                            <FormControl componentClass="select" placeholder="select">
-                                {this.renderCategories(this.props.posts.categories)}
-                            </FormControl>
-                        </FormGroup>
+    submitForm = (e) => {
+        e.preventDefault();
 
-                        <Button type="submit">Submit</Button>
-                    </form>
+        var newFormdata = {
+            ...this.state.formdata,
+            id: uuidv1(),
+            timestamp: Date.now()
+        }
 
-                </Modal.Body>
-            </Modal>
+        this.props.addPost(newFormdata);
 
-            <ListGroup>
-                {this.renderPosts(this.props.posts.posts)}
-            </ListGroup>
-        </div>
+        this.handleClose()
+        this.props.getPosts()
+        this.renderPosts(this.state.posts)
+    }
 
-    )
-}
+    render() {
+
+        return (
+            <div className="container">
+                <Button bsStyle="primary" bsSize="small" onClick={this.handleShow}>Add Post</Button>
+
+                <Modal show={this.state.show} onHide={this.handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Add post</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <form onSubmit={this.submitForm}>
+                            <FormControl
+                                id="formControlsText"
+                                type="text"
+                                label="Title"
+                                placeholder="Enter title"
+                                value={this.state.formdata.title}
+                                onChange={(event)=>this.handleInput(event,'title')}
+                            />
+                            <br/>
+                            <FormControl 
+                                componentClass="textarea" 
+                                placeholder="Enter post body"
+                                value={this.state.formdata.body}
+                                onChange={(event)=>this.handleInput(event,'body')}
+                            />
+                            <br/>
+                            <FormControl
+                                id="formControlsText"
+                                type="text"
+                                label="Author"
+                                placeholder="Enter author"
+                                value={this.state.formdata.author}
+                                onChange={(event)=>this.handleInput(event,'author')}
+                            />
+                            <br/>
+                            <FormGroup controlId="formControlsSelect">
+                                <ControlLabel>Category</ControlLabel>
+                                <FormControl componentClass="select" placeholder="select" value={this.state.formdata.category} onChange={(event)=>this.handleInput(event,'category')}>
+                                    {this.renderCategories(this.props.posts.categories)}
+                                </FormControl>
+                            </FormGroup>
+                            <br/>
+                            <Button type="submit">Submit</Button>
+                        </form>
+
+                    </Modal.Body>
+                </Modal>
+                <br/>
+                <br/>
+                <ListGroup>
+                    {this.renderPosts(this.props.posts.posts)}
+                </ListGroup>
+            </div>
+
+        )
+    }
 
 }
 
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({
         getPosts,
-        getCategories
+        getCategories, 
+        addPost
     }, dispatch)
 }
 

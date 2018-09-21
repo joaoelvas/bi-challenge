@@ -13,8 +13,9 @@ const PostItem = (item) => {
                 </Link>
             </div>
             <div>
-                <div>{item.author}</div>
-                <div>{item.commentCount}</div>
+                <div>Author - {item.author}</div>
+                <div>Comments - {item.commentCount}</div>
+                <br/>
                 <div>
                     <ButtonToolbar>
                         <Button bsStyle="primary" bsSize="small">
